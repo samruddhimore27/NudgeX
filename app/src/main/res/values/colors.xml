@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Premium Indigo & Teal Brand Palette -->
+    <color name="primary">#3F51B5</color>          <!-- Indigo -->
+    <color name="primary_variant">#283593</color>  <!-- Deep Indigo -->
+    <color name="secondary">#009688</color>        <!-- Teal -->
+    <color name="secondary_variant">#00695C</color> <!-- Deep Teal -->
+    <color name="sky_blue">#0288D1</color>         <!-- Soft Sky Blue -->
+
+    <!-- Surfaces & Backgrounds (Light Theme) -->
+    <color name="background">#F8F9FE</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_variant">#EEF0F8</color>
+    <color name="card_stroke">#DDE1F0</color>
+
+    <!-- Typography Colors -->
+    <color name="text_primary">#1A1C29</color>
+    <color name="text_secondary">#5C627A</color>
+    <color name="text_on_primary">#FFFFFF</color>
+
+    <!-- Category Specific Accents (Light) -->
+    <color name="category_contest_bg">#E0F7FA</color>
+    <color name="category_contest_text">#00796B</color>
+
+    <color name="category_class_bg">#E8EAF6</color>
+    <color name="category_class_text">#283593</color> <!-- Premium Deep Indigo -->
+
+    <color name="category_exam_bg">#F3E5F5</color>
+    <color name="category_exam_text">#6A1B9A</color>
+
+    <color name="category_goal_bg">#E8F5E9</color>
+    <color name="category_goal_text">#2E7D32</color>
+
+    <color name="category_task_bg">#FFF3E0</color>
+    <color name="category_task_text">#E65100</color>
+</resources>
