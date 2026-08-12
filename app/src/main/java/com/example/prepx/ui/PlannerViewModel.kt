@@ -20,8 +20,16 @@ import kotlinx.coroutines.launch
  */
 class PlannerViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository: PlannerRepository
     val authRepository: AuthRepository = AuthRepository()
+    private val repository: PlannerRepository = PlannerRepository(
+        AppDatabase.getDatabase(application).plannerDao(),
+        authRepository
+    )
+    private val activeUserIdFlow = MutableStateFlow(authRepository.getCurrentUserId())
+
+    fun refreshUserSession() {
+        activeUserIdFlow.value = authRepository.getCurrentUserId()
+    }
 
     private val _currentFilter = MutableStateFlow<ItemType?>(null)
     val currentFilter: StateFlow<ItemType?> = _currentFilter.asStateFlow()
@@ -32,15 +40,14 @@ class PlannerViewModel(application: Application) : AndroidViewModel(application)
     private val _syncMessage = MutableStateFlow<String?>(null)
     val syncMessage: StateFlow<String?> = _syncMessage.asStateFlow()
 
-    init {
-        val database = AppDatabase.getDatabase(application)
-        repository = PlannerRepository(database.plannerDao())
-    }
-
     /**
-     * Flow of raw item list from Room database.
+     * Flow of raw item list from Room database filtered by active user ID.
      */
-    val allItems: StateFlow<List<PlannerItem>> = repository.allItems
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val allItems: StateFlow<List<PlannerItem>> = activeUserIdFlow
+        .flatMapLatest { userId ->
+            repository.getAllItems(userId)
+        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -131,5 +138,11 @@ class PlannerViewModel(application: Application) : AndroidViewModel(application)
 
     fun clearSyncMessage() {
         _syncMessage.value = null
+    }
+
+    fun clearAllData() {
+        viewModelScope.launch {
+            repository.clearAllData()
+        }
     }
 }

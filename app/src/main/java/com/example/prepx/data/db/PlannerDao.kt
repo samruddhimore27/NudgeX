@@ -10,17 +10,17 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PlannerDao {
 
-    @Query("SELECT * FROM planner_items ORDER BY dateTime ASC")
-    fun getAllItemsSortedByDate(): Flow<List<PlannerItem>>
+    @Query("SELECT * FROM planner_items WHERE userId = :userId OR userId = '' ORDER BY dateTime ASC")
+    fun getAllItemsSortedByDate(userId: String): Flow<List<PlannerItem>>
 
-    @Query("SELECT * FROM planner_items WHERE isCompleted = 1 ORDER BY dateTime DESC")
-    fun getCompletedGoals(): Flow<List<PlannerItem>>
+    @Query("SELECT * FROM planner_items WHERE isCompleted = 1 AND (userId = :userId OR userId = '') ORDER BY dateTime DESC")
+    fun getCompletedGoals(userId: String): Flow<List<PlannerItem>>
 
     @Query("SELECT * FROM planner_items WHERE id = :id")
     suspend fun getItemById(id: Long): PlannerItem?
 
-    @Query("SELECT * FROM planner_items WHERE externalId = :externalId LIMIT 1")
-    suspend fun getItemByExternalId(externalId: String): PlannerItem?
+    @Query("SELECT * FROM planner_items WHERE externalId = :externalId AND (userId = :userId OR userId = '') LIMIT 1")
+    suspend fun getItemByExternalId(externalId: String, userId: String): PlannerItem?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItem(item: PlannerItem): Long
@@ -42,4 +42,7 @@ interface PlannerDao {
 
     @Query("DELETE FROM planner_items WHERE id = :id")
     suspend fun deleteItemById(id: Long)
+
+    @Query("DELETE FROM planner_items")
+    suspend fun deleteAllItems()
 }

@@ -27,6 +27,7 @@ import java.util.TimeZone
  */
 class PlannerRepository(
     private val plannerDao: PlannerDao,
+    private val authRepository: com.example.prepx.data.auth.AuthRepository = com.example.prepx.data.auth.AuthRepository(),
     private val apiService: CodeforcesApiService = RetrofitClient.apiService,
     private val codeChefApiService: CodeChefApiService = RetrofitClient.codeChefApiService,
     private val kontestsApiService: KontestsApiService = RetrofitClient.kontestsApiService
@@ -37,21 +38,23 @@ class PlannerRepository(
     }
 
     /**
-     * Flow emitting the complete ordered list of planner items from local Room storage.
+     * Flow emitting the complete ordered list of planner items for the active user.
      */
-    val allItems: Flow<List<PlannerItem>> = plannerDao.getAllItemsSortedByDate()
+    fun getAllItems(userId: String): Flow<List<PlannerItem>> = plannerDao.getAllItemsSortedByDate(userId)
 
     /**
-     * Flow emitting completed goals used for daily streak calculations.
+     * Flow emitting completed goals for the active user.
      */
-    val completedGoals: Flow<List<PlannerItem>> = plannerDao.getCompletedGoals()
+    fun getCompletedGoals(userId: String): Flow<List<PlannerItem>> = plannerDao.getCompletedGoals(userId)
 
     /**
-     * Inserts a new planner item into local storage.
+     * Inserts a new planner item into local storage attached to the current user.
      */
     suspend fun insertItem(item: PlannerItem): Long = withContext(Dispatchers.IO) {
-        val newId = plannerDao.insertItem(item)
-        Log.d(TAG, "Inserted PlannerItem id=$newId, title=${item.title}")
+        val currentUserId = authRepository.getCurrentUserId()
+        val itemWithUser = if (item.userId.isBlank()) item.copy(userId = currentUserId) else item
+        val newId = plannerDao.insertItem(itemWithUser)
+        Log.d(TAG, "Inserted PlannerItem id=$newId, title=${item.title}, userId=$currentUserId")
         newId
     }
 
@@ -77,6 +80,14 @@ class PlannerRepository(
     suspend fun toggleCompletion(id: Long, isCompleted: Boolean) = withContext(Dispatchers.IO) {
         plannerDao.updateCompletionStatus(id, isCompleted)
         Log.d(TAG, "Toggled completion for id=$id to $isCompleted")
+    }
+
+    /**
+     * Clears all local planner items from Room database.
+     */
+    suspend fun clearAllData() = withContext(Dispatchers.IO) {
+        plannerDao.deleteAllItems()
+        Log.d(TAG, "Cleared all local Room items.")
     }
 
     /**
@@ -197,13 +208,15 @@ class PlannerRepository(
             val upcomingContests = response.result.filter { it.phase == "BEFORE" }
             var insertedCount = 0
 
+            val currentUserId = authRepository.getCurrentUserId()
             for (contest in upcomingContests) {
                 val externalId = contest.id.toString()
-                val existing = plannerDao.getItemByExternalId(externalId)
+                val existing = plannerDao.getItemByExternalId(externalId, currentUserId)
                 
                 if (existing == null) {
                     val startTimeMs = (contest.startTimeSeconds ?: 0L) * 1000L
                     val item = PlannerItem(
+                        userId = currentUserId,
                         title = contest.name,
                         description = "Contest (${contest.durationSeconds / 3600}h duration)",
                         type = ItemType.CONTEST,

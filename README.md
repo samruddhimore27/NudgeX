@@ -26,7 +26,7 @@ Your personal productivity assistant for staying on track with tasks, classes, a
   - **`🎥 Join Class` / `🏆 Give Contest`**: Instantly launches the associated video meeting or contest link in your browser.
 - **Competitive Programming Contest Explorer**: Live synchronization of upcoming contests from Codeforces, CodeChef, and LeetCode platforms with direct web links.
 - **Daily Active Streak Counter**: Algorithmic streak tracker calculating consecutive active days for problem-solving and daily habits with grace period logic.
-- **Offline Data Storage**: Persistent local database built with Room DB and Kotlin Flow for fast, offline-first access.
+- **Offline Data Storage & Multi-Account Isolation**: Persistent local database built with Room DB and Kotlin Flow with `userId` isolation, ensuring task privacy and schedule restoration across user logins.
 - **In-App Guide & Documentation**: Interactive bottom sheet guide and Profile information card explaining core use cases.
 - **Dark Theme Support**: Material Design 3 light and dark themes with persistent preference toggling.
 

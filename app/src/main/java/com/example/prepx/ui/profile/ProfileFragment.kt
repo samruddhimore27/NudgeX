@@ -65,11 +65,12 @@ class ProfileFragment : Fragment() {
 
     private fun loadSavedSettings() {
         val prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val userId = authRepository.getCurrentUserId()
         
-        // Handles
-        binding.editCodeforcesHandle.setText(prefs.getString(KEY_CF_HANDLE, ""))
-        binding.editCodeChefHandle.setText(prefs.getString(KEY_CC_HANDLE, ""))
-        binding.editLeetCodeHandle.setText(prefs.getString(KEY_LC_HANDLE, ""))
+        // Per-user handles
+        binding.editCodeforcesHandle.setText(prefs.getString("${KEY_CF_HANDLE}_$userId", ""))
+        binding.editCodeChefHandle.setText(prefs.getString("${KEY_CC_HANDLE}_$userId", ""))
+        binding.editLeetCodeHandle.setText(prefs.getString("${KEY_LC_HANDLE}_$userId", ""))
 
         // Theme Mode
         val savedTheme = prefs.getInt(KEY_THEME_MODE, AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
@@ -94,12 +95,13 @@ class ProfileFragment : Fragment() {
         val cf = binding.editCodeforcesHandle.text.toString().trim()
         val cc = binding.editCodeChefHandle.text.toString().trim()
         val lc = binding.editLeetCodeHandle.text.toString().trim()
+        val userId = authRepository.getCurrentUserId()
 
         val prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit().apply {
-            putString(KEY_CF_HANDLE, cf)
-            putString(KEY_CC_HANDLE, cc)
-            putString(KEY_LC_HANDLE, lc)
+            putString("${KEY_CF_HANDLE}_$userId", cf)
+            putString("${KEY_CC_HANDLE}_$userId", cc)
+            putString("${KEY_LC_HANDLE}_$userId", lc)
             apply()
         }
 
@@ -176,6 +178,7 @@ class ProfileFragment : Fragment() {
 
         binding.buttonSignOut.setOnClickListener {
             authRepository.logout()
+
             Toast.makeText(requireContext(), "Signed out successfully", Toast.LENGTH_SHORT).show()
 
             val intent = Intent(requireContext(), LoginActivity::class.java)

@@ -12,7 +12,7 @@ import com.example.prepx.data.model.PlannerItem
  * Main Room Database singleton instance for PrepX application.
  * Manages planner_items table with diagnostic logging for debug tracking.
  */
-@Database(entities = [PlannerItem::class], version = 1, exportSchema = false)
+@Database(entities = [PlannerItem::class], version = 2, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
 

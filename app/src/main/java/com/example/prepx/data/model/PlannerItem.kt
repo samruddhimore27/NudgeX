@@ -10,6 +10,7 @@ import androidx.room.PrimaryKey
 data class PlannerItem(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
+    val userId: String = "", // User ID for multi-account data isolation
     val title: String,
     val description: String? = null,
     val type: ItemType,

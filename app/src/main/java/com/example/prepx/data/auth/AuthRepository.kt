@@ -63,6 +63,10 @@ class AuthRepository {
      * Authenticates an existing user with email and password via Firebase Auth.
      */
     suspend fun login(email: String, pass: String): Result<FirebaseUser?> {
+        mockUserEmail = email.trim()
+        mockUserId = "user_${email.hashCode()}"
+        mockUserName = null
+
         val auth = firebaseAuth
         if (auth != null) {
             return try {
@@ -76,8 +80,6 @@ class AuthRepository {
         }
         
         // Local Fallback Login for unconfigured testing environment
-        mockUserEmail = email
-        mockUserId = "user_${email.hashCode()}"
         Log.d(TAG, "Local login successful for $email")
         return Result.success(null)
     }
@@ -129,5 +131,6 @@ class AuthRepository {
         }
         mockUserEmail = null
         mockUserId = null
+        mockUserName = null
     }
 }
