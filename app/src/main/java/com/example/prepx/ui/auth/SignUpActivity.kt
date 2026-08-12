@@ -38,9 +38,15 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun attemptSignUp() {
+        val name = binding.editName.text.toString().trim()
         val email = binding.editEmail.text.toString().trim()
         val password = binding.editPassword.text.toString().trim()
         val confirmPass = binding.editConfirmPassword.text.toString().trim()
+
+        if (name.isEmpty()) {
+            binding.editName.error = "Full Name is required"
+            return
+        }
 
         if (email.isEmpty()) {
             binding.editEmail.error = "Email address required"
@@ -60,15 +66,30 @@ class SignUpActivity : AppCompatActivity() {
         showLoading(true)
 
         lifecycleScope.launch {
-            val result = authRepository.signUp(email, password)
+            val result = authRepository.signUp(name, email, password)
             showLoading(false)
 
-            result.onSuccess { user ->
+            result.onSuccess {
                 Toast.makeText(this@SignUpActivity, "Account created successfully!", Toast.LENGTH_SHORT).show()
                 navigateToMain()
             }.onFailure { error ->
-                Toast.makeText(this@SignUpActivity, "Sign Up Failed: ${error.localizedMessage}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@SignUpActivity, getShortErrorMessage(error), Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun getShortErrorMessage(error: Throwable?): String {
+        val msg = error?.message ?: ""
+        return when {
+            msg.contains("badly formatted", ignoreCase = true) || msg.contains("invalid email", ignoreCase = true) ->
+                "Invalid email format"
+            msg.contains("already in use", ignoreCase = true) || msg.contains("already exists", ignoreCase = true) ->
+                "Email already registered"
+            msg.contains("weak password", ignoreCase = true) ->
+                "Password is too weak"
+            msg.contains("network", ignoreCase = true) || msg.contains("connect", ignoreCase = true) ->
+                "Network connection error"
+            else -> "Sign Up failed. Please check details."
         }
     }
 

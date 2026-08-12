@@ -127,14 +127,15 @@ class ContestsFragment : Fragment() {
 
                 val newItem = PlannerItem(
                     title = contest.name,
-                    description = "Platform: $platformName | URL: ${contest.url}",
+                    description = "Platform: $platformName | Duration: ${DateTimeUtils.formatDuration(try { contest.duration?.toDouble()?.toLong() ?: 7200L } catch(e: Exception) { 7200L })}",
                     type = ItemType.CONTEST,
                     dateTime = eventTime,
                     isCompleted = false,
                     reminderEnabled = true,
                     reminderTime = reminderTimeMs,
                     source = if (platformName.lowercase().contains("codeforces")) Source.CODEFORCES else Source.MANUAL,
-                    externalId = contest.name.hashCode().toString()
+                    externalId = contest.name.hashCode().toString(),
+                    url = contest.url
                 )
 
                 viewModel.addItem(newItem, requireContext())

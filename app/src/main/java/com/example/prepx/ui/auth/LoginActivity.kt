@@ -71,8 +71,21 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this@LoginActivity, "Welcome, $display!", Toast.LENGTH_SHORT).show()
                 navigateToMain()
             }.onFailure { error ->
-                Toast.makeText(this@LoginActivity, "Login Failed: ${error.localizedMessage}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@LoginActivity, getShortErrorMessage(error), Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+
+    private fun getShortErrorMessage(error: Throwable?): String {
+        val msg = error?.message ?: ""
+        return when {
+            msg.contains("badly formatted", ignoreCase = true) || msg.contains("invalid email", ignoreCase = true) ->
+                "Invalid email format"
+            msg.contains("wrong password", ignoreCase = true) || msg.contains("invalid credential", ignoreCase = true) || msg.contains("user not found", ignoreCase = true) ->
+                "Invalid email or password"
+            msg.contains("network", ignoreCase = true) || msg.contains("connect", ignoreCase = true) ->
+                "Network connection error"
+            else -> "Login failed. Please try again."
         }
     }
 

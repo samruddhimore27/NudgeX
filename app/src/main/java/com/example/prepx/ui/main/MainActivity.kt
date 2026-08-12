@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
             if (!alarmManager.canScheduleExactAlarms()) {
                 MaterialAlertDialogBuilder(this)
                     .setTitle("Enable Reminders ⏰")
-                    .setMessage("Allow PrepX to trigger exact alarm alerts for your contests and tasks on time.")
+                    .setMessage("Allow NudgeX to trigger exact alarm alerts for your contests and tasks on time.")
                     .setPositiveButton("Enable") { _, _ ->
                         try {
                             val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM).apply {

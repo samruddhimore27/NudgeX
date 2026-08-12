@@ -37,6 +37,9 @@ interface PlannerDao {
     @Query("UPDATE planner_items SET isCompleted = :isCompleted WHERE id = :id")
     suspend fun updateCompletionStatus(id: Long, isCompleted: Boolean)
 
+    @Query("SELECT * FROM planner_items WHERE reminderEnabled = 1")
+    suspend fun getActiveReminderItems(): List<PlannerItem>
+
     @Query("DELETE FROM planner_items WHERE id = :id")
     suspend fun deleteItemById(id: Long)
 }

@@ -2,6 +2,7 @@ package com.example.prepx.data.db
 
 import androidx.room.TypeConverter
 import com.example.prepx.data.model.ItemType
+import com.example.prepx.data.model.RepeatType
 import com.example.prepx.data.model.Source
 
 /**
@@ -34,6 +35,20 @@ class Converters {
             Source.valueOf(value)
         } catch (e: Exception) {
             Source.MANUAL
+        }
+    }
+
+    @TypeConverter
+    fun fromRepeatType(type: RepeatType): String {
+        return type.name
+    }
+
+    @TypeConverter
+    fun toRepeatType(value: String): RepeatType {
+        return try {
+            RepeatType.valueOf(value)
+        } catch (e: Exception) {
+            RepeatType.NONE
         }
     }
 }

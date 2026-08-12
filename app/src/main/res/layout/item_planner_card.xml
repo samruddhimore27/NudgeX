@@ -66,18 +66,51 @@
             app:layout_constraintStart_toStartOf="@id/textTitle"
             app:layout_constraintTop_toBottomOf="@id/textDescription" />
 
-        <com.google.android.material.chip.Chip
-            android:id="@+id/chipReminder"
-            style="@style/Widget.Material3.Chip.Suggestion"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/layoutBadges"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="⏰ 15m before"
-            android:textSize="11sp"
-            android:visibility="gone"
-            app:chipMinHeight="24dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/textTitle"
-            app:layout_constraintTop_toBottomOf="@id/textDateTime" />
+            app:layout_constraintTop_toBottomOf="@id/textDateTime">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipReminder"
+                style="@style/Widget.Material3.Chip.Suggestion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⏰ 15m before"
+                android:textSize="11sp"
+                android:visibility="gone"
+                app:chipMinHeight="24dp" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipRepeat"
+                style="@style/Widget.Material3.Chip.Suggestion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="🔄 Daily"
+                android:textSize="11sp"
+                android:visibility="gone"
+                app:chipMinHeight="24dp" />
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonCardAction"
+            style="@style/Widget.Material3.Button.TonalButton"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginTop="8dp"
+            android:text="🎥 Join Class"
+            android:textSize="12sp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutBadges" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

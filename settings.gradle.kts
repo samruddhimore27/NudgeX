@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "PrepX"
+rootProject.name = "NudgeX"
 include(":app")

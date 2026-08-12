@@ -1,8 +1,10 @@
 package com.example.prepx.ui
 
+import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Paint
-import android.content.res.ColorStateList
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,6 +69,15 @@ class PlannerAdapter(
                 binding.chipReminder.visibility = View.GONE
             }
 
+            // Bind Repeat Badge
+            val repeatSummary = item.getRepeatSummary()
+            if (!repeatSummary.isNullOrEmpty()) {
+                binding.chipRepeat.visibility = View.VISIBLE
+                binding.chipRepeat.text = repeatSummary
+            } else {
+                binding.chipRepeat.visibility = View.GONE
+            }
+
             // Bind Checkbox & Strikethrough
             binding.checkBoxCompleted.isChecked = item.isCompleted
             if (item.isCompleted) {
@@ -75,6 +86,32 @@ class PlannerAdapter(
             } else {
                 binding.textTitle.paintFlags = binding.textTitle.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
                 binding.root.alpha = 1.0f
+            }
+
+            // Bind Card Action Button (Join Class, Give Contest, Open Link)
+            if (!item.url.isNullOrBlank() || item.type == ItemType.CLASS || item.type == ItemType.CONTEST) {
+                binding.buttonCardAction.visibility = View.VISIBLE
+                val actionText = when (item.type) {
+                    ItemType.CLASS -> "🎥 Join Class"
+                    ItemType.CONTEST -> "🏆 Give Contest"
+                    else -> "🔗 Open Link"
+                }
+                binding.buttonCardAction.text = actionText
+
+                binding.buttonCardAction.setOnClickListener {
+                    if (!item.url.isNullOrBlank()) {
+                        try {
+                            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(item.url))
+                            context.startActivity(browserIntent)
+                        } catch (e: Exception) {
+                            onToggleCompletion(item)
+                        }
+                    } else {
+                        onToggleCompletion(item)
+                    }
+                }
+            } else {
+                binding.buttonCardAction.visibility = View.GONE
             }
 
             // Event Listeners

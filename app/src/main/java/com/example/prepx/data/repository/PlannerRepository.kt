@@ -212,7 +212,8 @@ class PlannerRepository(
                         reminderEnabled = true,
                         reminderTime = if (startTimeMs > 0) startTimeMs - 3600000L else null,
                         source = Source.CODEFORCES,
-                        externalId = externalId
+                        externalId = externalId,
+                        url = "https://codeforces.com/contests/${contest.id}"
                     )
                     plannerDao.insertItem(item)
                     insertedCount++

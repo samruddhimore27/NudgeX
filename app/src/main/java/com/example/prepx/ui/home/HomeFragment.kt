@@ -93,6 +93,11 @@ class HomeFragment : Fragment() {
             val dialog = AddTaskBottomSheetDialog.newInstance()
             dialog.show(childFragmentManager, AddTaskBottomSheetDialog.TAG)
         }
+
+        binding.imageButtonGuide.setOnClickListener {
+            val dialog = com.example.prepx.ui.dialog.AppGuideBottomSheetDialog.newInstance()
+            dialog.show(childFragmentManager, com.example.prepx.ui.dialog.AppGuideBottomSheetDialog.TAG)
+        }
     }
 
     private fun observeViewModel() {

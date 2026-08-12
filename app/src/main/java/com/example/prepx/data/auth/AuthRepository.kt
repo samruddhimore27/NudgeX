@@ -15,6 +15,7 @@ class AuthRepository {
         private const val TAG = "PrepX_Auth"
         private var mockUserEmail: String? = null
         private var mockUserId: String? = null
+        private var mockUserName: String? = null
     }
 
     private val firebaseAuth: FirebaseAuth? by lazy {
@@ -48,6 +49,17 @@ class AuthRepository {
     }
 
     /**
+     * Returns current user Full Name or display name.
+     */
+    fun getCurrentUserName(): String {
+        val firebaseName = firebaseAuth?.currentUser?.displayName
+        if (!firebaseName.isNullOrBlank()) return firebaseName
+        if (!mockUserName.isNullOrBlank()) return mockUserName!!
+        val emailPrefix = getCurrentUserEmail().substringBefore("@")
+        return emailPrefix.replaceFirstChar { it.uppercase() }
+    }
+
+    /**
      * Authenticates an existing user with email and password via Firebase Auth.
      */
     suspend fun login(email: String, pass: String): Result<FirebaseUser?> {
@@ -71,25 +83,37 @@ class AuthRepository {
     }
 
     /**
-     * Registers a new user account with email and password via Firebase Auth.
+     * Registers a new user account with Full Name, email and password via Firebase Auth.
      */
-    suspend fun signUp(email: String, pass: String): Result<FirebaseUser?> {
+    suspend fun signUp(name: String, email: String, pass: String): Result<FirebaseUser?> {
         val auth = firebaseAuth
+        mockUserName = name.trim()
+        mockUserEmail = email.trim()
+        mockUserId = "user_${email.hashCode()}"
+
         if (auth != null) {
             return try {
-                Log.d(TAG, "Attempting Firebase signup for email: $email")
+                Log.d(TAG, "Attempting Firebase signup for name: $name, email: $email")
                 val authResult = auth.createUserWithEmailAndPassword(email, pass).await()
-                Result.success(authResult.user)
+                val user = authResult.user
+                if (user != null && name.isNotBlank()) {
+                    try {
+                        val profileUpdates = com.google.firebase.auth.userProfileChangeRequest {
+                            displayName = name.trim()
+                        }
+                        user.updateProfile(profileUpdates).await()
+                    } catch (e: Exception) {
+                        Log.w(TAG, "Profile name update warning: ${e.localizedMessage}")
+                    }
+                }
+                Result.success(user)
             } catch (e: Exception) {
                 Log.e(TAG, "Firebase signup error: ${e.localizedMessage}")
                 Result.failure(e)
             }
         }
 
-        // Local Fallback Signup for unconfigured testing environment
-        mockUserEmail = email
-        mockUserId = "user_${email.hashCode()}"
-        Log.d(TAG, "Local signup successful for $email")
+        Log.d(TAG, "Local signup successful for $name ($email)")
         return Result.success(null)
     }
 

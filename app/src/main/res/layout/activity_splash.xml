@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#5622DC">
+    android:background="#FFFFFF"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="32dp">
 
-    <!-- High-res full screen splash graphic page -->
+    <!-- Centered 3D NudgeX Symbol Icon -->
     <ImageView
         android:id="@+id/imageSplashBackground"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/bg_splash_screen" />
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        android:contentDescription="NudgeX Icon"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_splash_logo" />
 
-</FrameLayout>
+    <!-- Sleek, Modern Tagline in Dark Midnight Blue -->
+    <TextView
+        android:id="@+id/textSplashTagline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.25"
+        android:text="PLAN  •  REMEMBER  •  DO"
+        android:textColor="@color/midnight_blue"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

@@ -6,6 +6,7 @@
     <color name="secondary">#009688</color>        <!-- Teal -->
     <color name="secondary_variant">#00695C</color> <!-- Deep Teal -->
     <color name="sky_blue">#0288D1</color>         <!-- Soft Sky Blue -->
+    <color name="midnight_blue">#101A2E</color>     <!-- Midnight Blue Tagline -->
 
     <!-- Surfaces & Backgrounds (Light Theme) -->
     <color name="background">#F8F9FE</color>

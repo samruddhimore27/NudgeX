@@ -9,6 +9,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.prepx.data.model.ItemType
 import com.example.prepx.data.model.PlannerItem
+import com.example.prepx.data.model.RepeatType
 import com.example.prepx.data.model.Source
 import com.example.prepx.databinding.DialogAddTaskBinding
 import com.example.prepx.ui.PlannerViewModel
@@ -86,6 +87,11 @@ class AddTaskBottomSheetDialog : BottomSheetDialogFragment() {
             showTimePicker()
         }
 
+        binding.chipGroupRepeat.setOnCheckedStateChangeListener { _, checkedIds ->
+            binding.layoutWeeklyDaysContainer.visibility =
+                if (checkedIds.contains(binding.chipRepeatWeekly.id)) View.VISIBLE else View.GONE
+        }
+
         binding.switchReminder.setOnCheckedChangeListener { _, isChecked ->
             binding.layoutReminderContainer.visibility = if (isChecked) View.VISIBLE else View.GONE
         }
@@ -140,6 +146,7 @@ class AddTaskBottomSheetDialog : BottomSheetDialogFragment() {
                 binding.textDialogTitle.text = "Edit Item"
                 binding.editTaskTitle.setText(item.title)
                 binding.editTaskDescription.setText(item.description ?: "")
+                binding.editTaskUrl.setText(item.url ?: "")
                 selectedCalendar.timeInMillis = item.dateTime
                 updateDateTimeDisplay()
 
@@ -149,6 +156,23 @@ class AddTaskBottomSheetDialog : BottomSheetDialogFragment() {
                     ItemType.EXAM -> binding.chipTypeExam.isChecked = true
                     ItemType.TASK -> binding.chipTypeTask.isChecked = true
                     ItemType.GOAL -> binding.chipTypeGoal.isChecked = true
+                }
+
+                when (item.repeatType) {
+                    RepeatType.DAILY -> binding.chipRepeatDaily.isChecked = true
+                    RepeatType.WEEKLY -> {
+                        binding.chipRepeatWeekly.isChecked = true
+                        binding.layoutWeeklyDaysContainer.visibility = View.VISIBLE
+                        val days = item.repeatDays?.split(",")?.map { it.trim().uppercase() } ?: emptyList()
+                        binding.chipDaySun.isChecked = days.contains("SUN")
+                        binding.chipDayMon.isChecked = days.contains("MON")
+                        binding.chipDayTue.isChecked = days.contains("TUE")
+                        binding.chipDayWed.isChecked = days.contains("WED")
+                        binding.chipDayThu.isChecked = days.contains("THU")
+                        binding.chipDayFri.isChecked = days.contains("FRI")
+                        binding.chipDaySat.isChecked = days.contains("SAT")
+                    }
+                    RepeatType.NONE -> binding.chipRepeatNone.isChecked = true
                 }
 
                 binding.switchReminder.isChecked = item.reminderEnabled
@@ -184,6 +208,40 @@ class AddTaskBottomSheetDialog : BottomSheetDialogFragment() {
             else -> ItemType.TASK
         }
 
+        val repeatType = when (binding.chipGroupRepeat.checkedChipId) {
+            binding.chipRepeatDaily.id -> RepeatType.DAILY
+            binding.chipRepeatWeekly.id -> RepeatType.WEEKLY
+            else -> RepeatType.NONE
+        }
+
+        val repeatDays = if (repeatType == RepeatType.WEEKLY) {
+            val selectedDays = mutableListOf<String>()
+            if (binding.chipDaySun.isChecked) selectedDays.add("SUN")
+            if (binding.chipDayMon.isChecked) selectedDays.add("MON")
+            if (binding.chipDayTue.isChecked) selectedDays.add("TUE")
+            if (binding.chipDayWed.isChecked) selectedDays.add("WED")
+            if (binding.chipDayThu.isChecked) selectedDays.add("THU")
+            if (binding.chipDayFri.isChecked) selectedDays.add("FRI")
+            if (binding.chipDaySat.isChecked) selectedDays.add("SAT")
+
+            if (selectedDays.isEmpty()) {
+                // Default to selected event day if no days checked
+                val dayStr = when (selectedCalendar.get(Calendar.DAY_OF_WEEK)) {
+                    Calendar.SUNDAY -> "SUN"
+                    Calendar.MONDAY -> "MON"
+                    Calendar.TUESDAY -> "TUE"
+                    Calendar.WEDNESDAY -> "WED"
+                    Calendar.THURSDAY -> "THU"
+                    Calendar.FRIDAY -> "FRI"
+                    Calendar.SATURDAY -> "SAT"
+                    else -> "MON"
+                }
+                dayStr
+            } else {
+                selectedDays.joinToString(",")
+            }
+        } else null
+
         val reminderEnabled = binding.switchReminder.isChecked
         val eventTimeMs = selectedCalendar.timeInMillis
 
@@ -198,6 +256,11 @@ class AddTaskBottomSheetDialog : BottomSheetDialogFragment() {
 
         val reminderTimeMs = if (reminderEnabled) eventTimeMs - offsetMs else null
 
+        val rawUrl = binding.editTaskUrl.text.toString().trim()
+        val formattedUrl = if (rawUrl.isNotEmpty()) {
+            if (!rawUrl.startsWith("http://") && !rawUrl.startsWith("https://")) "https://$rawUrl" else rawUrl
+        } else null
+
         val itemToSave = PlannerItem(
             id = if (editingItemId != -1L) editingItemId else 0L,
             title = title,
@@ -208,7 +271,10 @@ class AddTaskBottomSheetDialog : BottomSheetDialogFragment() {
             reminderEnabled = reminderEnabled,
             reminderTime = reminderTimeMs,
             source = existingItem?.source ?: Source.MANUAL,
-            externalId = existingItem?.externalId
+            externalId = existingItem?.externalId,
+            repeatType = repeatType,
+            repeatDays = repeatDays,
+            url = formattedUrl
         )
 
         if (editingItemId != -1L) {

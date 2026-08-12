@@ -59,9 +59,8 @@ class ProfileFragment : Fragment() {
     }
 
     private fun setupUserInfo() {
+        binding.textUserName.text = authRepository.getCurrentUserName()
         binding.textUserEmail.text = authRepository.getCurrentUserEmail()
-        val uid = authRepository.getCurrentUserId()
-        binding.textUserId.text = if (uid.isNotEmpty()) "UID: $uid" else "Guest Session"
     }
 
     private fun loadSavedSettings() {
