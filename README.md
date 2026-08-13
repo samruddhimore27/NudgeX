@@ -14,6 +14,15 @@ Your personal productivity assistant for staying on track with tasks, classes, a
 
 ---
 
+## 🎬 Demo Video
+
+
+> 📹 **Watch on YouTube**: [Click here to view the app demo video](https://youtube.com/shorts/PAZbVNkjMQQ)
+
+
+
+---
+
 ## 🚀 Key Features
 
 - **User Authentication**: Secure email and password authentication powered by Firebase Auth, preserving user sessions across app launches.
